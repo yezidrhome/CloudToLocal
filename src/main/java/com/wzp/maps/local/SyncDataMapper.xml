@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wzp.dao.local.ILocalSyncDataDao">
+
+    <insert id="save" parameterType="Map">
+        insert into ${table} (
+        <foreach collection="fields" index="key" item="val" separator=",">${key}</foreach>
+        )
+        values(
+        <foreach collection="fields" index="key" item="val" separator=",">#{val}</foreach>
+        )
+    </insert>
+
+    <insert id="batchSave" parameterType="Map">
+        insert into ${table}(
+        <foreach collection="datas[0]" index="key" item="val" separator=",">`${key}`</foreach>
+        )
+        values
+        <foreach collection ="datas" item="data" separator =",">
+            (
+            <foreach collection="data" index="key" item="val" separator=",">
+
+                <choose>
+                    <when test="val == 'sync_data_null' ">
+                        null
+                    </when>
+                    <otherwise>
+                        #{val}
+                    </otherwise>
+                </choose>
+            </foreach>
+            )
+        </foreach >
+    </insert>
+
+    <select id="queryAllSyncTableConfig" parameterType="Map" resultType="Map">
+        select id, name, isfactoryid, oldid, factoryDataCount, dataCount
+        from sync_table_config
+        order by id
+    </select>
+</mapper>

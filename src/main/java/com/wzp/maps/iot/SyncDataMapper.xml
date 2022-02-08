@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wzp.dao.iot.IIotSyncDataDao">
+
+    <select id="getTableColumn" parameterType="Map" resultType="String">
+        select column_name
+        from information_schema.columns
+        where table_name=#{table_name} and table_schema=#{table_schema}
+    </select>
+
+    <select id="getAllTableName" parameterType="Map" resultType="String">
+        select table_name from information_schema.tables where table_schema=#{table_schema} and table_name not like 'v_%'
+    </select>
+
+    <select id="getDataCount" parameterType="Map" resultType="int">
+        select count(1) from ${table_name}
+    </select>
+
+    <select id="getDataByLimit" parameterType="Map" resultType="Map">
+        select <foreach collection ="tableColumns" item="column" separator =",">ifnull(`${column}`, 'sync_data_null') '${column}'</foreach>
+        from ${table_name}
+        limit ${limitCount}, 1000
+    </select>
+
+</mapper>
